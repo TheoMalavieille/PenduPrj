@@ -148,7 +148,7 @@ def main():
     rejouer = "oui"
     while rejouer == "oui":
         lancer_une_partie()
-        rejouer = input("\nVoulez-vous rejouer ? (oui/non) : ").lower()
+        rejouer = input("\nVoulez-vous rejouer ? (ecrire oui/non) : ").lower()
     
     print("Au revoir !")
 
