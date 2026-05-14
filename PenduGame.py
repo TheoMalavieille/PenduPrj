@@ -77,32 +77,34 @@ def afficher_indice(mot_secret, lettres_utilisees):
 # Fonctionnement principale d'une partie
 
 def lancer_une_partie():
-    # L'utilisateur peut proposer son propre fichier
     choix_fichier = input("Nom du fichier de mots (ou Entrée pour defaut) : ")
     if choix_fichier == "":
         choix_fichier = "mots_pendu.txt"
     
     mots = lire_fichier_mots(choix_fichier)
+
+    # Si le fichier n'a pas marché et que ce n'était pas déjà le fichier par défaut, on le prend
+    if len(mots) == 0 and choix_fichier != "mots_pendu.txt":
+        print("Fichier '" + choix_fichier + "' introuvable. Utilisation de mots_pendu.txt par defaut.")
+        mots = lire_fichier_mots("mots_pendu.txt")
+
     if len(mots) == 0:
+        print("Erreur : Impossible de charger une liste de mots.")
         return 
 
-    # On choisit un mot au hasard dans la liste
     mot_a_deviner = random.choice(mots)
     lettres_essayees = []
-    chances = 6 # On commence avec 6 chances
+    chances = 6
 
-    # Boucle qui tourne tant qu'on a des chances
     while chances > 0:
         print("\nMot : " + creer_affichage(mot_a_deviner, lettres_essayees))
         print("Chances restantes :", chances)
         
-        # On donne l'indice s'il ne reste qu'une chance
         if chances == 1:
             afficher_indice(mot_a_deviner, lettres_essayees)
 
         proposition = input("Entrez une lettre : ").lower()
 
-        # On vérifie que c'est bien une seule lettre
         if len(proposition) != 1 or not proposition.isalpha():
             print("Erreur : Entrez une seule lettre.")
             continue
@@ -115,21 +117,18 @@ def lancer_une_partie():
 
         lettres_essayees.append(lettre_pure)
 
-        # On prépare le mot secret sans accents pour la vérification
-        mot_simple = ""
+        mot_simplifie = ""
         for car in mot_a_deviner:
-            mot_simple = mot_simple + normaliser_lettre(car)
+            mot_simplifie = mot_simplifie + normaliser_lettre(car)
 
-        # On indique si la lettre est bonne ou pas
-        if lettre_pure in mot_simple:
+        if lettre_pure in mot_simplifie:
             print("Oui, la lettre est dans le mot !")
         else:
             print("Non, ce n'est pas la bonne lettre.")
-            chances = chances - 1 # On retire une chance
+            chances = chances - 1
 
-        # On vérifie si le joueur a gagné
         victoire = True
-        for car in mot_simple:
+        for car in mot_simplifie:
             if car not in lettres_essayees:
                 victoire = False
         
@@ -137,7 +136,6 @@ def lancer_une_partie():
             print("\nGAGNE ! Le mot etait : " + mot_a_deviner)
             break
     
-    # Si les chances tombent à zéro, c'est perdu
     if chances == 0:
         print("\nPERDU... Le mot etait : " + mot_a_deviner)
 
